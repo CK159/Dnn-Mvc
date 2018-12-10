@@ -8,7 +8,7 @@
         <name>Sample</name>
         <organization>Sample</organization>
         <url>http://www.christoc.com/</url>
-        <email>sample@sample.sample</email>
+        <email>sample@example.com</email>
       </owner>
       <license src="License.txt"></license>
       <releaseNotes src="ReleaseNotes.txt"></releaseNotes>

@@ -1,18 +1,17 @@
-﻿@inherits DotNetNuke.Web.Mvc.Framework.DnnWebViewPage<IEnumerable< SampleMVC.Modules.SampleMVC.Models.Item >>
+﻿@*@inherits DotNetNuke.Web.Mvc.Framework.DnnWebViewPage<IEnumerable< SampleMVC.Modules.SampleMVC.Models.Item >>*@
 
 @using System.Text.RegularExpressions
 @using DotNetNuke.Web.Mvc.Helpers
 
-
 <div id="Items-@Dnn.ModuleContext.ModuleId">
-    @if (Model.Count() == 0)
+    @if (ViewBag.items.Count == 0)
     {
         <p>@Dnn.LocalizeString("NoItems")</p>
     }
     else
     {
         <ul class="tm_tl">
-            @foreach (var item in Model)
+            @foreach (var item in ViewBag.items)
             {
                 <li class="tm_t">
                     <h3>@item.ItemName</h3>
@@ -30,4 +29,9 @@
             }
         </ul>
     }
+    <p>
+        Namespace: @ViewBag.settings.Namespace<br/>
+        Controller: @ViewBag.settings.Controller<br/>
+        Method: @ViewBag.settings.Method<br/>
+    </p>
 </div>

@@ -81,7 +81,10 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
         public ActionResult Index()
         {
             var items = ItemManager.Instance.GetItems(ModuleContext.ModuleId);
-            return View(items);
+            ViewBag.items = items;
+            ViewBag.settings = ItemManager.Instance.GetMvcSettings(ModuleContext);
+            
+            return View();
         }
     }
 }

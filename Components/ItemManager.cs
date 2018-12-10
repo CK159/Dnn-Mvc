@@ -11,14 +11,17 @@
 */
 
 using System.Collections.Generic;
+using DotNetNuke.Collections;
 using DotNetNuke.Data;
 using DotNetNuke.Framework;
+using DotNetNuke.UI.Modules;
 using SampleMVC.Modules.SampleMVC.Models;
 
 namespace SampleMVC.Modules.SampleMVC.Components
 {
     interface IItemManager
     {
+        Settings GetMvcSettings(ModuleInstanceContext mc);
         void CreateItem(Item t);
         void DeleteItem(int itemId, int moduleId);
         void DeleteItem(Item t);
@@ -29,6 +32,15 @@ namespace SampleMVC.Modules.SampleMVC.Components
 
     class ItemManager : ServiceLocator<IItemManager, ItemManager>, IItemManager
     {
+        public Settings GetMvcSettings(ModuleInstanceContext mc)
+        {
+            Settings settings = new Models.Settings();
+            settings.Namespace = mc.Configuration.ModuleSettings.GetValueOrDefault("SampleMVC_MVC_Namespace", "SampleMVC.Modules.SampleMVC.Controllers");
+            settings.Controller = mc.Configuration.ModuleSettings.GetValueOrDefault("SampleMVC_MVC_Controller", "ItemController");
+            settings.Method = mc.Configuration.ModuleSettings.GetValueOrDefault("SampleMVC_MVC_Method", "Index");
+            return settings;
+        }
+
         public void CreateItem(Item t)
         {
             using (IDataContext ctx = DataContext.Instance())

@@ -18,7 +18,8 @@ namespace SampleMVC.Modules.SampleMVC.Models
 {
     public class Settings
     {
-        public bool Setting1 { get; set; }
-        public DateTime Setting2 { get; set; }
+        public string Namespace { get; set; }
+        public string Controller { get; set; }
+        public string Method { get; set; }
     }
 }

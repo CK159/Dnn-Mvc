@@ -30,8 +30,9 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
         public ActionResult Settings()
         {
             var settings = new Models.Settings();
-            settings.Setting1 = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("SampleMVC_Setting1", false);
-            settings.Setting2 = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("SampleMVC_Setting2", System.DateTime.Now);
+            settings.Namespace = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("SampleMVC_MVC_Namespace", "SampleMVC.Modules.SampleMVC.Controllers");
+            settings.Controller = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("SampleMVC_MVC_Controller", "ItemController");
+            settings.Method = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("SampleMVC_MVC_Method", "Index");
 
             return View(settings);
         }
@@ -46,8 +47,9 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
         [DotNetNuke.Web.Mvc.Framework.ActionFilters.ValidateAntiForgeryToken]
         public ActionResult Settings(Models.Settings settings)
         {
-            ModuleContext.Configuration.ModuleSettings["SampleMVC_Setting1"] = settings.Setting1.ToString();
-            ModuleContext.Configuration.ModuleSettings["SampleMVC_Setting2"] = settings.Setting2.ToUniversalTime().ToString("u");
+            ModuleContext.Configuration.ModuleSettings["SampleMVC_MVC_Namespace"] = settings.Namespace;
+            ModuleContext.Configuration.ModuleSettings["SampleMVC_MVC_Controller"] = settings.Controller;
+            ModuleContext.Configuration.ModuleSettings["SampleMVC_MVC_Method"] = settings.Method;
 
             return RedirectToDefaultRoute();
         }

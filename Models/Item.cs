@@ -34,7 +34,10 @@ namespace SampleMVC.Modules.SampleMVC.Models
         ///<summary>
         /// A string with the name of the ItemName
         ///</summary>
-        public string ItemName { get; set; }
+        string _ItemName;
+        public string ItemName { get => _ItemName;
+            set => _ItemName = value;
+        }
 
         ///<summary>
         /// A string with the description of the object
