@@ -13,10 +13,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using SampleMVC.Modules.SampleMVC.Mvc;
 
 namespace SampleMVC.Modules.SampleMVC.Models
 {
-    public class Settings
+    public class Settings : MvcModuleSettings
     {
         public string Namespace { get; set; }
         public string Controller { get; set; }

@@ -19,6 +19,7 @@ using DotNetNuke.Web.Mvc.Framework.Controllers;
 using DotNetNuke.Web.Mvc.Framework.ActionFilters;
 using DotNetNuke.Entities.Users;
 using DotNetNuke.Framework.JavaScriptLibraries;
+using SampleMVC.Modules.SampleMVC.Mvc;
 
 namespace SampleMVC.Modules.SampleMVC.Controllers
 {
@@ -77,6 +78,7 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
             return RedirectToDefaultRoute();
         }
 
+        [MvcModule("sampleAction", "Sample - item display / edit from template")]
         [ModuleAction(ControlKey = "Edit", TitleKey = "AddItem")]
         public ActionResult Index()
         {

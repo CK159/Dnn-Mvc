@@ -4,6 +4,7 @@
 @using DotNetNuke.Web.Mvc.Helpers
 
 <div id="Items-@Dnn.ModuleContext.ModuleId">
+    <p><b>Sample Item Display</b></p>
     @if (ViewBag.items.Count == 0)
     {
         <p>@Dnn.LocalizeString("NoItems")</p>

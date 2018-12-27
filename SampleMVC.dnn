@@ -52,7 +52,7 @@
                 <moduleControls>
                   <moduleControl>
                     <controlKey />
-                    <controlSrc>SampleMVC.Modules.SampleMVC.Controllers/Item/Index.mvc</controlSrc>
+                    <controlSrc>SampleMVC.Modules.SampleMVC.Base/MvcModule/Index.mvc</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>
                     <controlTitle />
                     <controlType>View</controlType>
@@ -73,7 +73,7 @@
                   </moduleControl>
                   <moduleControl>
                     <controlKey>Settings</controlKey>
-                    <controlSrc>SampleMVC.Modules.SampleMVC.Controllers/Settings/Settings.mvc</controlSrc>
+                    <controlSrc>SampleMVC.Modules.SampleMVC.Mvc/MvcModule/Settings.mvc</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>
                     <controlTitle>SampleMVC Settings</controlTitle>
                     <controlType>Edit</controlType>

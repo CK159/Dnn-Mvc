@@ -1,0 +1,10 @@
+﻿<div id="Error-@Dnn.ModuleContext.ModuleId" class="module-load-error alert alert-danger">
+    @if (ViewBag.message == null)
+    {
+        <text>An unknown error has occurred.</text>
+    }
+    else
+    {
+        @ViewBag.message
+    }
+</div>
