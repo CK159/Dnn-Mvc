@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using System.Web.WebPages;
 using DotNetNuke.Services.Localization;
+using DotNetNuke.Web.Mvc.Framework.ActionFilters;
 using DotNetNuke.Web.Mvc.Framework.Controllers;
 
 namespace SampleMVC.Modules.SampleMVC.Mvc
@@ -88,6 +89,7 @@ namespace SampleMVC.Modules.SampleMVC.Mvc
             return result;
         }
         
+        [ModuleAction(ControlKey = "Edit", Title = "Settings")]
         public ActionResult Settings()
         {
             MvcModuleSettings settings = new MvcModuleSettings(ModuleContext);

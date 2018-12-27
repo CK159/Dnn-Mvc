@@ -62,9 +62,9 @@
                   </moduleControl>
                   <moduleControl>
                     <controlKey>Edit</controlKey>
-                    <controlSrc>SampleMVC.Modules.SampleMVC.Controllers/Item/Edit.mvc</controlSrc>
+                    <controlSrc>SampleMVC.Modules.SampleMVC.Mvc/MvcModule/Settings.mvc</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>
-                    <controlTitle>Edit Content</controlTitle>
+                    <controlTitle>Settings</controlTitle>
                     <controlType>Edit</controlType>
                     <iconFile />
                     <helpUrl />
