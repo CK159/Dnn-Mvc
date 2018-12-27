@@ -4,4 +4,6 @@ Create product config page
 Create product list page
 Create product detail page
 Create cart page
-Fix controller resource files not being loaded correctly by MvcModuleLoader
+
+
+DONE - Fix controller resource files not being loaded correctly by MvcModuleLoader

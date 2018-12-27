@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.WebPages;
+using DotNetNuke.Services.Localization;
 using DotNetNuke.Web.Mvc.Framework.Controllers;
 
 namespace SampleMVC.Modules.SampleMVC.Mvc
@@ -62,9 +64,13 @@ namespace SampleMVC.Modules.SampleMVC.Mvc
                 .MakeGenericMethod(info.Type)
                 .Invoke(null, new object[]{null});
 
+            string controllerName = (string)instance.RouteData.Values["controller"];
+            string actionName = info.Method.Name;
+            
             //Set up extra context
-            instance.ControllerContext.RouteData.Values["action"] = info.Method.Name;
-            //DNN-specific context
+            instance.ControllerContext.RouteData.Values["action"] = actionName;
+            //DNN-specific extra context
+            instance.DnnPage = DnnPage;
             instance.ModuleContext = ModuleContext;
 
             //Execute action
@@ -72,8 +78,12 @@ namespace SampleMVC.Modules.SampleMVC.Mvc
             
             //Update this controller's context data to that of the target
             //so that when the target's result is executed by this controller, the proper view can be found
-            ControllerContext.RouteData.Values["controller"] = instance.RouteData.Values["controller"];
-            ControllerContext.RouteData.Values["action"] = instance.RouteData.Values["action"];
+            ControllerContext.RouteData.Values["controller"] = controllerName;
+            ControllerContext.RouteData.Values["action"] = actionName;
+            LocalResourceFile = String.Format("~/DesktopModules/MVC/{0}/{1}/{2}.resx",
+                ModuleContext.Configuration.DesktopModule.FolderName,
+                Localization.LocalResourceDirectory,
+                controllerName);
             
             return result;
         }
