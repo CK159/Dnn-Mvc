@@ -1,0 +1,43 @@
+@inherits DotNetNuke.Web.Mvc.Framework.DnnWebViewPage<SampleMVC.Modules.SampleMVC.Controllers.ProductController.ProductListModel>
+
+@using System.Text.RegularExpressions
+@using Db
+@using DotNetNuke.Common
+@using DotNetNuke.Web.Mvc.Helpers
+
+<div id="Product-List-@Dnn.ModuleContext.ModuleId">
+    <p><b>Sample Item Display</b></p>
+    @if (Model.Message != null && !Model.Message.IsEmpty())
+    {
+        <div class="alert alert-info">
+            <b>Special Message!!!</b><br />
+            @Model.Message
+        </div>
+    }
+    <div class="row">
+        @foreach (Product product in Model.Products)
+        {
+            <div class="col-md-3 col-sm-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading text-center">
+                        @product.ProductName
+                    </div>
+                    <div class="panel-body">
+                        <div class="product-desc">@product.ProductDesc</div>
+                        <div class="product-btn-wrap">
+                            <a href="@Globals.NavigateURL(Model.DetailTabId, "", $"id={product.ProductId}")"
+                               class="btn btn-default product-detail-btn">
+                                View
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        
+        @if (Model.Products.Count == 0)
+        {
+            <div class="col-sm-12 text-center">...No products available...</div>
+        }
+     </div>
+</div>

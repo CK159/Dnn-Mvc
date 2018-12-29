@@ -32,7 +32,15 @@ namespace SampleMVC.Modules.SampleMVC.Mvc
                 return View("BasicError");
             }
 
-            MvcMethodInfo info = MvcModuleLoader.GetAction(route);
+            List<MvcMethodInfo> infos = MvcModuleLoader.GetActionsForRoute(route);
+
+            if (infos.Count > 1)
+            {
+                ViewBag.message = $"{infos.Count} actions found for {route}";
+                return View("BasicError");
+            }
+            
+            MvcMethodInfo info = infos.FirstOrDefault();
 
             if (info == null)
             {

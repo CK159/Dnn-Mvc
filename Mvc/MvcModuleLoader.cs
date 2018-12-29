@@ -14,13 +14,13 @@ namespace SampleMVC.Modules.SampleMVC.Mvc
             "SampleMVC"  
         };
         
-        public static MvcMethodInfo GetAction(string route)
+        public static List<MvcMethodInfo> GetActionsForRoute(string route)
         {
             //TODO: Load target assembly namespaces from web.config
-            MvcMethodInfo target = GetAllActions()
-                .FirstOrDefault(a => a.Attribute.Route == route);
+            IEnumerable<MvcMethodInfo> target = GetAllActions()
+                .Where(a => a.Attribute.Route == route);
 
-            return target;
+            return target.ToList();
         }
 
         public static List<MvcMethodInfo> GetAllActions()

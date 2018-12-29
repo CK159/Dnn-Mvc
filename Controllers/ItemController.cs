@@ -78,7 +78,7 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
             return RedirectToDefaultRoute();
         }
 
-        [MvcModule("sampleAction", "Sample - item display / edit from template")]
+        [MvcModule(route: "sampleAction", displayName: "Sample - item display / edit from template")]
         [ModuleAction(ControlKey = "Edit", TitleKey = "AddItem")]
         public ActionResult Index()
         {
