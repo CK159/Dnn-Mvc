@@ -16,6 +16,8 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
     {
         private Dbc context = new Dbc();
         
+        #region # ProductList #
+        
         [MvcModule(route: "productList", displayName: "Frontend - Product List")]
         public ActionResult ProductList()
         {
@@ -36,12 +38,52 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
             public int DetailTabId { get; set; }
         }
         
+        #endregion
+        
+        #region # ProductDetail #
+        
         [MvcModule(route: "productDetail", displayName: "Frontend - Product Detail")]
         public ActionResult ProductDetail()
         {
-            return View();
+            string idStr = Request.QueryString["id"] ?? "";
+            int productId;
+            if (int.TryParse(idStr, out productId))
+            {
+                ProductDetailModel model = LoadProductDetail(productId);
+
+                if (model != null)
+                    return View(model);
+            }
+
+            if (productId > 0)
+                ViewBag.Message = $"Product with Id: {productId} not found.";
+            else
+                ViewBag.Message = "No Product Id provided.";
+            return View("BasicError");
         }
 
+        private ProductDetailModel LoadProductDetail(int productId)
+        {
+            if (productId <= 0)
+                return null;
+
+            string backUrl =
+                Globals.NavigateURL(new TabController().GetTabByName("Products", ModuleContext.PortalId).TabID);
+
+            return (from p in context.Products
+                where p.ProductId == productId
+                select new ProductDetailModel
+                {
+                    ProductId = p.ProductId,
+                    ProductName = p.ProductName,
+                    ProductDesc = p.ProductDesc,
+                    ProductRichDesc = p.ProductRichDesc,
+                    Active = p.Active,
+                    DateCreated = p.DateCreated,
+                    BackUrl = backUrl
+                }).FirstOrDefault();
+        }
+        
         public class ProductDetailModel
         {
             public int ProductId { get; set; }
@@ -50,6 +92,9 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
             public string ProductRichDesc { get; set; }
             public bool Active { get; set; }
             public DateTime DateCreated { get; set; }
+            public string BackUrl { get; set; }
         }
+        
+        #endregion
     }
 }

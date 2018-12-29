@@ -161,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="todo.txt" />
+    <Content Include="Views\Product\ProductDetail.cshtml" />
     <Content Include="Views\Product\ProductList.cshtml" />
     <Content Include="Views\Shared\BaseSettings.cshtml" />
     <Content Include="Views\Shared\BasicError.cshtml" />
