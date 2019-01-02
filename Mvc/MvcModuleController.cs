@@ -6,6 +6,7 @@ using System.Web.WebPages;
 using DotNetNuke.Services.Localization;
 using DotNetNuke.Web.Mvc.Framework.ActionFilters;
 using DotNetNuke.Web.Mvc.Framework.Controllers;
+using SampleMVC.Modules.SampleMVC.Controllers;
 
 namespace SampleMVC.Modules.SampleMVC.Mvc
 {
@@ -22,6 +23,7 @@ namespace SampleMVC.Modules.SampleMVC.Mvc
         /// Reconfigured context data allows the resultant ActionResult to be executed/rendered by framework as normal.
         /// </summary>
         /// <returns></returns>
+        [ModuleAction(ControlKey = "Edit", Title = "Settings")]
         public ActionResult Index()
         {
             string route = new MvcModuleSettings(ModuleContext).Route;
@@ -62,10 +64,31 @@ namespace SampleMVC.Modules.SampleMVC.Mvc
                 return View("BasicError");
             }
 
-            return Process(info);
+            return InvokeMvcAction(info);
         }
 
-        protected ActionResult Process(MvcMethodInfo info)
+        //TODO: Guess this needs to be a generic action invoker with model binder since DNN does not appear to allow altering the default post action of MVC Modules...
+        [HttpPost]
+        public ActionResult Index(ProductController.AddToCartVm item)
+        {
+            //ViewBag.message = $"ProductId: {item.ProductId} Quantity: {item.Quantity}";
+            //return View("BasicError");
+            
+            string controllerName = "product";
+            string actionName = "productdetail";
+            
+            ProductController pc = ViewRenderer.CreateController<ProductController>();
+            pc.ControllerContext.RouteData.Values["action"] = actionName;
+            pc.DnnPage = DnnPage;
+            pc.ModuleContext = ModuleContext;
+            
+            ControllerContext.RouteData.Values["controller"] = controllerName;
+            ControllerContext.RouteData.Values["action"] = actionName;
+            
+            return pc.ProductDetail(item);
+        }
+
+        protected ActionResult InvokeMvcAction(MvcMethodInfo info)
         {
             //Get the controller
             DnnController instance = (DnnController)typeof(ViewRenderer)
@@ -97,7 +120,6 @@ namespace SampleMVC.Modules.SampleMVC.Mvc
             return result;
         }
         
-        [ModuleAction(ControlKey = "Edit", Title = "Settings")]
         public ActionResult Settings()
         {
             MvcModuleSettings settings = new MvcModuleSettings(ModuleContext);

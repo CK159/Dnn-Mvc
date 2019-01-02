@@ -119,6 +119,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Settings.resx</DependentUpon>
     </Compile>
+    <Compile Include="Components\Cart.cs" />
+    <Compile Include="Controllers\CartController.cs" />
+    <Compile Include="Controllers\ProductAdminController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Mvc\MvcModuleSettings.cs" />
     <Compile Include="Mvc\ViewRenderer.cs" />
@@ -161,6 +164,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="todo.txt" />
+    <Content Include="Views\Cart\Index.cshtml" />
+    <Content Include="Views\ProductAdmin\Index.cshtml" />
     <Content Include="Views\Product\ProductDetail.cshtml" />
     <Content Include="Views\Product\ProductList.cshtml" />
     <Content Include="Views\Shared\BaseSettings.cshtml" />

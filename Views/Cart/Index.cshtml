@@ -1,0 +1,52 @@
+@using SampleMVC.Modules.SampleMVC.Controllers
+@inherits DotNetNuke.Web.Mvc.Framework.DnnWebViewPage<SampleMVC.Modules.SampleMVC.Controllers.CartController.CartVm>
+
+<div id="Cart-@Dnn.ModuleContext.ModuleId">
+    <div class="pull-right">
+        <button type="button" class="btn btn-default" disabled>&gt; Checkout</button>
+    </div>
+    
+    <a href="@Model.ProductListUrl">&lt; Return to Products</a>
+    <h3>My Cart</h3>
+
+    @if (Model.Cart.Count == 0)
+    {
+        <div class="alert alert-info">
+            Your cart is empty.<br/>
+            <a href="@Model.ProductListUrl">&lt; Return to Products</a>
+        </div>
+    }
+    else
+    {
+        <p>@Model.Cart.Sum(c => c.Quantity) item@(Model.Cart.Sum(c => c.Quantity) != 1 ? "s" : "") in cart.</p>
+
+        <table class="table table-bordered table-striped table-hover">
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th></th>
+            </tr>
+    
+            @foreach (CartController.CartItemVm item in Model.Cart)
+            {
+                <tr>
+                    <td>
+                        <b><a href="@item.ProductDetailUrl">@item.ProductName</a></b><br/>
+                        <p>@item.ProductDesc</p>
+                    </td>
+    
+                    <td>
+                        <b>@item.Quantity</b>
+                    </td>
+                    <th>
+                        <button type="button" class="btn btn-sm btn-danger" title="Remove from cart">&times;</button>
+                    </th>
+                </tr>
+            }
+        </table>
+        
+        <div class="pull-right">
+            <button type="button" class="btn btn-default" disabled>&gt; Checkout</button>
+        </div>
+    }
+</div>

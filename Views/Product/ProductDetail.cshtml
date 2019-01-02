@@ -1,28 +1,42 @@
-@inherits DotNetNuke.Web.Mvc.Framework.DnnWebViewPage<SampleMVC.Modules.SampleMVC.Controllers.ProductController.ProductDetailModel>
+@inherits DotNetNuke.Web.Mvc.Framework.DnnWebViewPage<SampleMVC.Modules.SampleMVC.Controllers.ProductController.ProductDetailVm>
 
-<a href="@Model.BackUrl">&lt; Back to Products</a>
-
-<h1>@Model.ProductName</h1>
-<p>Product Details</p>
-<hr />
-
-@if (!Model.Active)
-{
-    <div class="alert alert-danger text-center">
-        This product is not currently available. Check back later.
+<div id="Product-Detail-@Dnn.ModuleContext.ModuleId">
+    @Html.Hidden("ProductId", Model.ProductId)
+    
+    <a href="@Model.BackUrl">&lt; Back to Products</a>
+    
+    <h1>@Model.ProductName</h1>
+    <p>Product Details</p>
+    <hr />
+    
+    @if (Model.ErrorMessage != "")
+    {
+        <div class="alert alert-danger text-center">
+            @Model.ErrorMessage
+        </div>
+    }
+    
+    @if (!Model.Active)
+    {
+        <div class="alert alert-danger text-center">
+            This product is not currently available. Check back later.
+        </div>
+    }
+    
+    <div class="detail-rich-desc">
+        @Html.Raw(Model.ProductRichDesc)
     </div>
-}
-
-<div class="detail-rich-desc">
-    @Html.Raw(Model.ProductRichDesc)
+    
+    <br />
+    
+    <div class="form-group form-inline">
+        <label>Quantity:</label>
+        <input type="number" min="1" value="1" name="Quantity" class="form-control" style="width: 150px;"/>
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg" @(!Model.Active ? "disabled" : "")>Add to Cart</button>
+    
+    <p class="text-muted">
+        Product added on @Model.DateCreated.ToString("MM/dd/yyyy").<br />
+        Product Id: @Model.ProductId.
+    </p>
 </div>
-
-<br />
-<p class="text-center">
-    <button type="button" class="btn btn-primary btn-lg" @(!Model.Active ? "disabled" : "")>Add to Cart</button>
-</p>
-
-<p class="text-muted">
-    Product added on @Model.DateCreated.ToString("MM/dd/yyyy").<br />
-    Product Id: @Model.ProductId.
-</p>

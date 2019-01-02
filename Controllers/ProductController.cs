@@ -7,6 +7,7 @@ using DotNetNuke.Common;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Web.Mvc.Framework.ActionFilters;
 using DotNetNuke.Web.Mvc.Framework.Controllers;
+using SampleMVC.Modules.SampleMVC.Components;
 using SampleMVC.Modules.SampleMVC.Mvc;
 
 namespace SampleMVC.Modules.SampleMVC.Controllers
@@ -49,7 +50,7 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
             int productId;
             if (int.TryParse(idStr, out productId))
             {
-                ProductDetailModel model = LoadProductDetail(productId);
+                ProductDetailVm model = LoadProductDetail(productId);
 
                 if (model != null)
                     return View(model);
@@ -62,7 +63,7 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
             return View("BasicError");
         }
 
-        private ProductDetailModel LoadProductDetail(int productId)
+        public ProductDetailVm LoadProductDetail(int productId)
         {
             if (productId <= 0)
                 return null;
@@ -72,7 +73,7 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
 
             return (from p in context.Products
                 where p.ProductId == productId
-                select new ProductDetailModel
+                select new ProductDetailVm
                 {
                     ProductId = p.ProductId,
                     ProductName = p.ProductName,
@@ -84,15 +85,48 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
                 }).FirstOrDefault();
         }
         
-        public class ProductDetailModel
+        public class ProductDetailVm
         {
             public int ProductId { get; set; }
-            public string ProductName { get; set; }
-            public string ProductDesc { get; set; }
-            public string ProductRichDesc { get; set; }
+            public string ProductName { get; set; } = "";
+            public string ProductDesc { get; set; } = "";
+            public string ProductRichDesc { get; set; } = "";
             public bool Active { get; set; }
             public DateTime DateCreated { get; set; }
-            public string BackUrl { get; set; }
+            public string BackUrl { get; set; } = "";
+            public string ErrorMessage { get; set; } = "";
+        }
+
+        //TODO: Find out how to make this work with DNN
+        //public ActionResult AddToCart(AddToCartModel item)
+        [HttpPost]
+        public ActionResult ProductDetail(AddToCartVm item)
+        {
+            //TODO: Should validate product exists and is active to prevent malicious manipulation
+            ProductDetailVm model = LoadProductDetail(item.ProductId);
+
+            if (item.Quantity <= 0)
+            {
+                model.ErrorMessage = "Please enter a valid quantity.";
+                return View("ProductDetail", model);
+            }
+            
+            Cart cart = Cart.Get(Session);
+            cart.Add(new CartItem
+            {
+                ProductId = item.ProductId,
+                ProductName = model.ProductName,
+                Quantity = item.Quantity
+            });
+            cart.Save();
+
+            return Redirect(Globals.NavigateURL(new TabController().GetTabByName("Cart", ModuleContext.PortalId).TabID));
+        }
+
+        public class AddToCartVm
+        {
+            public int ProductId { get; set; }
+            public int Quantity { get; set; }
         }
         
         #endregion
