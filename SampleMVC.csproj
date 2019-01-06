@@ -123,6 +123,7 @@
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\ProductAdminController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Mvc\MvcModuleConfig.cs" />
     <Compile Include="Mvc\MvcModuleSettings.cs" />
     <Compile Include="Mvc\ViewRenderer.cs" />
     <Compile Include="Components\FeatureController.cs" />

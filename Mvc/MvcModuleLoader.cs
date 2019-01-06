@@ -8,15 +8,8 @@ namespace SampleMVC.Modules.SampleMVC.Mvc
 {
     public static class MvcModuleLoader
     {
-        //TODO: Load from configs
-        private static readonly List<string> MvcAssemblies = new List<string>
-        {
-            "SampleMVC"  
-        };
-        
         public static List<MvcMethodInfo> GetActionsForRoute(string route)
         {
-            //TODO: Load target assembly namespaces from web.config
             IEnumerable<MvcMethodInfo> target = GetAllActions()
                 .Where(a => a.Attribute.Route == route);
 
@@ -25,10 +18,12 @@ namespace SampleMVC.Modules.SampleMVC.Mvc
 
         public static List<MvcMethodInfo> GetAllActions()
         {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(s => MvcAssemblies.Contains(s.GetName().Name));
+            Assembly[] allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            List<string> cfgAssemblies = MvcModuleConfig.GetAssembliesList();
+            
+            var activeAssemblies = allAssemblies.Where(s => cfgAssemblies.Contains(s.GetName().Name));
 
-            var attrMethods = assemblies
+            var attrMethods = activeAssemblies
                 .SelectMany(b => b.GetTypes().Where(t => t.IsSubclassOf(typeof(DnnController))))
                 .SelectMany(t => t.GetMethods().Select(m => new MvcMethodInfo
                 {
