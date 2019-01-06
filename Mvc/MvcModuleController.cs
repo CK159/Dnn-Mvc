@@ -6,7 +6,6 @@ using System.Web.WebPages;
 using DotNetNuke.Services.Localization;
 using DotNetNuke.Web.Mvc.Framework.ActionFilters;
 using DotNetNuke.Web.Mvc.Framework.Controllers;
-using SampleMVC.Modules.SampleMVC.Controllers;
 
 namespace SampleMVC.Modules.SampleMVC.Mvc
 {
@@ -26,109 +25,155 @@ namespace SampleMVC.Modules.SampleMVC.Mvc
         [ModuleAction(ControlKey = "Edit", Title = "Settings")]
         public ActionResult Index()
         {
-            string route = new MvcModuleSettings(ModuleContext).Route;
-            
-            if (route == null || route.IsEmpty())
-            {
-                ViewBag.message = "Module has no route specified";
+            MvcMethodInfo info = GetAndValidateInfo(ActionType.Default);
+
+            //If there is no method info, error message will be set in ViewBag
+            if (info == null)
                 return View("BasicError");
+
+            //Get the target controller
+            DnnController instance = GetController(info);
+            //Execute action
+            ActionResult result = (ActionResult) info.Method.Invoke(instance, null);
+            //Set up this controller with data from target controller
+            PostConfigure(info, instance);
+            return result;
+        }
+
+        /// <summary>
+        /// Handles the postback action for all MVC modules
+        /// Finds method tagged with both [HttpPost] attribute and
+        /// MvcModule attribute matching module's configured route
+        /// Operates like Index() method but also handles model binding for target action
+        /// </summary>
+        /// <param name="whatever"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult Index(bool? whatever)
+        {
+            MvcMethodInfo info = GetAndValidateInfo(ActionType.Postback);
+
+            //If there is no method info, error message will be set in ViewBag
+            if (info == null)
+                return View("BasicError");
+
+            //Get the target controller
+            DnnController instance = GetController(info);
+
+            //Model binding
+            Type modelType = info.Method.GetParameters().FirstOrDefault()?.ParameterType;
+            List<object> actionArguments = new List<object>();
+
+            if (modelType != null)
+            {
+                object model = Activator.CreateInstance(modelType);
+                //Trick from https://stackoverflow.com/a/23407917
+                TryUpdateModel((dynamic) model);
+                //Push any model binding errors to the target controller 
+                instance.ModelState.Merge(ModelState);
+                actionArguments.Add(model);
             }
 
-            List<MvcMethodInfo> infos = MvcModuleLoader.GetActionsForRoute(route);
+            //Execute action, passing in the model if one exists
+            var arr = actionArguments.ToArray();
+            ActionResult result = (ActionResult) info.Method.Invoke(instance, arr);
+            //Set up this controller with data from target controller
+            PostConfigure(info, instance);
+            return result;
+        }
+
+        private MvcMethodInfo GetAndValidateInfo(ActionType type)
+        {
+            string route = new MvcModuleSettings(ModuleContext).Route;
+
+            if (route == null || route.IsEmpty())
+            {
+                ViewBag.message = "Module has no route specified.";
+                return null;
+            }
+
+            List<MvcMethodInfo> infos = MvcModuleLoader.GetActionsForRoute(route, type);
 
             if (infos.Count > 1)
             {
-                ViewBag.message = $"{infos.Count} actions found for {route}";
-                return View("BasicError");
+                ViewBag.message = $"{infos.Count} actions found for {route}.";
+                return null;
             }
-            
+
             MvcMethodInfo info = infos.FirstOrDefault();
 
             if (info == null)
             {
-                ViewBag.message = $"No action found for {route}";
-                return View("BasicError");
+                string typeName = type == ActionType.Postback ? "postback" : "non-postback";
+                ViewBag.message = $"No {typeName} action found for {route}.";
+                return null;
             }
 
             if (info.Type != typeof(DnnController)
                 && !info.Type.IsSubclassOf(typeof(DnnController)))
             {
-                ViewBag.message = $"Controller for route {route} must be of type DnnController (or a derivative type). Currently returning {info.Type.Name}";
-                return View("BasicError");
+                ViewBag.message =
+                    $"Controller for route {route} must be of type DnnController (or a derivative type). Currently returning {info.Type.Name}.";
+                return null;
             }
 
-            if (info.Method.ReturnType != typeof(ActionResult) 
+            if (info.Method.ReturnType != typeof(ActionResult)
                 && !info.Method.ReturnType.IsSubclassOf(typeof(ActionResult)))
             {
-                ViewBag.message = $"Route {route} must return ActionResult (or a derivative type). Currently returning {info.Method.ReturnType.Name}";
-                return View("BasicError");
+                ViewBag.message =
+                    $"Route {route} must return ActionResult (or a derivative type). Currently returning {info.Method.ReturnType.Name}.";
+                return null;
             }
 
-            return InvokeMvcAction(info);
+            return info;
         }
 
-        //TODO: Guess this needs to be a generic action invoker with model binder since DNN does not appear to allow altering the default post action of MVC Modules...
-        [HttpPost]
-        public ActionResult Index(ProductController.AddToCartVm item)
+        //Instantiate and set up target controller
+        private DnnController GetController(MvcMethodInfo info)
         {
-            //ViewBag.message = $"ProductId: {item.ProductId} Quantity: {item.Quantity}";
-            //return View("BasicError");
-            
-            string controllerName = "product";
-            string actionName = "productdetail";
-            
-            ProductController pc = ViewRenderer.CreateController<ProductController>();
-            pc.ControllerContext.RouteData.Values["action"] = actionName;
-            pc.DnnPage = DnnPage;
-            pc.ModuleContext = ModuleContext;
-            
-            ControllerContext.RouteData.Values["controller"] = controllerName;
-            ControllerContext.RouteData.Values["action"] = actionName;
-            
-            return pc.ProductDetail(item);
-        }
-
-        protected ActionResult InvokeMvcAction(MvcMethodInfo info)
-        {
-            //Get the controller
-            DnnController instance = (DnnController)typeof(ViewRenderer)
+            DnnController instance = (DnnController) typeof(ViewRenderer)
                 .GetMethod("CreateController")
                 .MakeGenericMethod(info.Type)
-                .Invoke(null, new object[]{null});
+                .Invoke(null, new object[] {null});
 
-            string controllerName = (string)instance.RouteData.Values["controller"];
-            string actionName = info.Method.Name;
-            
             //Set up extra context
-            instance.ControllerContext.RouteData.Values["action"] = actionName;
+            instance.ControllerContext.RouteData.Values["action"] = info.Method.Name;
             //DNN-specific extra context
             instance.DnnPage = DnnPage;
             instance.ModuleContext = ModuleContext;
 
-            //Execute action
-            ViewResult result = (ViewResult)info.Method.Invoke(instance, null);
-            
-            //Update this controller's context data to that of the target
-            //so that when the target's result is executed by this controller, the proper view can be found
+            return instance;
+        }
+
+        //Update this controller's context data to that of the target
+        //so that when the target's result is executed by this controller, the proper view can be found
+        private void PostConfigure(MvcMethodInfo info, DnnController instance)
+        {
+            string controllerName = (string) instance.RouteData.Values["controller"];
+
             ControllerContext.RouteData.Values["controller"] = controllerName;
-            ControllerContext.RouteData.Values["action"] = actionName;
+            ControllerContext.RouteData.Values["action"] = info.Method.Name;
             LocalResourceFile = String.Format("~/DesktopModules/MVC/{0}/{1}/{2}.resx",
                 ModuleContext.Configuration.DesktopModule.FolderName,
                 Localization.LocalResourceDirectory,
                 controllerName);
-            
-            return result;
         }
-        
+
         public ActionResult Settings()
         {
             MvcModuleSettings settings = new MvcModuleSettings(ModuleContext);
-            List<SelectListItem> routes = MvcModuleLoader.GetAllActions().Select(a => new SelectListItem
-            {
-                Text = a.Attribute.DisplayName,
-                Value = a.Attribute.Route
-            }).OrderBy(s => s.Text).ToList();
-            
+            List<SelectListItem> routes = MvcModuleLoader.GetAllActions()
+                .Where(r => !r.isPost) //Postback routes are not primary routes
+                .Select(a => new SelectListItem
+                {
+                    Text = a.Attribute.DisplayName == ""
+                        ? "Unlabeled Route: " + a.Attribute.Route
+                        : a.Attribute.DisplayName,
+                    Value = a.Attribute.Route
+                })
+                .OrderBy(s => s.Text)
+                .ToList();
+
             //Unknown or no longer available route selected. Preserve selection.
             if (settings.Route != "" && routes.All(r => r.Value != settings.Route))
                 routes.Insert(0, new SelectListItem
@@ -136,7 +181,7 @@ namespace SampleMVC.Modules.SampleMVC.Mvc
                     Text = $"Unknown Route: {settings.Route}",
                     Value = settings.Route
                 });
-            
+
             MvcSettingsModel model = new MvcSettingsModel
             {
                 Routes = routes,

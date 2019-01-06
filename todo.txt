@@ -1,7 +1,7 @@
-Make way to invoke correct actions from MvcModuleLoader for postbacks
 Create BaseController
 Create product config page
 
+DONE - Make way to invoke correct actions from MvcModuleLoader for postbacks
 DONE - Create product list page
 DONE - Create product detail page
 DONE - Create cart page

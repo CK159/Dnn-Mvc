@@ -8,7 +8,7 @@ namespace SampleMVC.Modules.SampleMVC.Mvc
         public string Route { get; set; }
         public string DisplayName { get; set; }
 
-        public MvcModuleAttribute(string route, string displayName)
+        public MvcModuleAttribute(string route, string displayName = "")
         {
             Route = route;
             DisplayName = displayName;

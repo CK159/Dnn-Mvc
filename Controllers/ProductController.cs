@@ -97,9 +97,8 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
             public string ErrorMessage { get; set; } = "";
         }
 
-        //TODO: Find out how to make this work with DNN
-        //public ActionResult AddToCart(AddToCartModel item)
         [HttpPost]
+        [MvcModule(route: "productDetail")]
         public ActionResult ProductDetail(AddToCartVm item)
         {
             //TODO: Should validate product exists and is active to prevent malicious manipulation
