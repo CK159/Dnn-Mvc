@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -23,6 +24,7 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
                 join Product p in context.Products on c.ProductId equals p.ProductId
                 select new CartItemVm
                 {
+                    CartId = c.CartId,
                     ProductId = c.ProductId,
                     ProductName = c.ProductName,
                     Quantity = c.Quantity,
@@ -47,11 +49,29 @@ namespace SampleMVC.Modules.SampleMVC.Controllers
 
         public class CartItemVm
         {
+            public Guid CartId { get; set; }
             public int ProductId { get; set; }
             public string ProductName { get; set; }
             public string ProductDesc { get; set; }
             public int Quantity { get; set; }
             public string ProductDetailUrl { get; set; }
         }
+
+        [HttpPost]
+        [MvcModule(route: "cart", displayName: "Frontend - Cart")]
+        public ActionResult Index(CartPostbackVm item)
+        {
+            Cart cart = Cart.Get(Session);
+            cart.RemoveAll(c => c.CartId == item.RemoveCartId);
+            cart.Save();
+
+            return RedirectToDefaultRoute();
+        }
+
+        public class CartPostbackVm
+        {
+            public Guid RemoveCartId { get; set; }
+        }
+        
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Web;
 
@@ -22,8 +23,14 @@ namespace SampleMVC.Modules.SampleMVC.Components
 
     public class CartItem
     {
+        public Guid CartId { get; set; }
         public int ProductId { get; set; }
         public string ProductName { get; set; }
         public int Quantity { get; set; }
+
+        public CartItem()
+        {
+            CartId = Guid.NewGuid();
+        }
     }
 }
